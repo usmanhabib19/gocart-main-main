@@ -78,7 +78,7 @@ const Hero = () => {
     ]
 
     return (
-        <div className='mx-6'>
+        <div className='px-6'>
             <div className='flex max-xl:flex-col gap-8 max-w-7xl mx-auto my-10'>
                 <div className='flex-1 rounded-3xl overflow-hidden' style={{ minHeight: '400px' }}>
                     <Swiper
