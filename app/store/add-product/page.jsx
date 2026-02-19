@@ -36,13 +36,16 @@ export default function StoreAddProduct() {
             );
 
             const data = await response.json();
+            console.log("Cloudinary Response:", data);
+
             if (data.secure_url) {
                 return data.secure_url;
             } else {
-                throw new Error("Image upload failed");
+                console.error("Cloudinary Error Detail:", data.error || data);
+                throw new Error(data.error?.message || "Image upload failed");
             }
         } catch (error) {
-            console.error("Cloudinary Upload Error:", error);
+            console.error("Cloudinary Upload Error Info:", error);
             throw error;
         }
     }
