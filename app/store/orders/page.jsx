@@ -2,9 +2,9 @@
 import { useEffect, useState } from "react"
 import Loading from "@/components/Loading"
 import toast from "react-hot-toast"
-import { getOrdersByStoreId, updateOrderStatus as updateOrderStatusAction, setTrackingId as setTrackingIdAction } from "@/lib/actions/order"
+import { getOrdersByStoreId, updateOrderStatus as updateOrderStatusAction, setTrackingId as setTrackingIdAction, deleteOrder as deleteOrderAction } from "@/lib/actions/order"
 import { getStoreByUserId } from "@/lib/actions/store"
-import { SendIcon, RefreshCcw } from "lucide-react"
+import { SendIcon, RefreshCcw, Trash2 } from "lucide-react"
 
 export default function StoreOrders() {
     const [orders, setOrders] = useState([])
@@ -76,6 +76,26 @@ export default function StoreOrders() {
         }
     }
 
+    const handleDeleteOrder = async (orderId) => {
+        if (!confirm("Are you sure you want to delete this order? This action cannot be undone.")) return;
+
+        try {
+            const success = await deleteOrderAction(orderId);
+            if (success) {
+                setOrders(prev => prev.filter(o => o.id !== orderId));
+                toast.success("Order deleted successfully");
+                if (selectedOrder?.id === orderId) {
+                    closeModal();
+                }
+            } else {
+                toast.error("Failed to delete order");
+            }
+        } catch (error) {
+            console.error("Delete order error:", error);
+            toast.error("An error occurred while deleting the order");
+        }
+    }
+
     const closeModal = () => {
         setSelectedOrder(null)
         setIsModalOpen(false)
@@ -117,7 +137,7 @@ export default function StoreOrders() {
                     <table className="w-full text-sm text-left text-gray-600">
                         <thead className="bg-gray-50 text-gray-700 text-xs uppercase tracking-wider">
                             <tr>
-                                {["Sr. No.", "Customer", "Total", "Payment", "Coupon", "Status", "Date"].map((heading, i) => (
+                                {["Sr. No.", "Customer", "Total", "Payment", "Coupon", "Status", "Date", "Action"].map((heading, i) => (
                                     <th key={i} className="px-4 py-3">{heading}</th>
                                 ))}
                             </tr>
@@ -158,6 +178,15 @@ export default function StoreOrders() {
                                     </td>
                                     <td className="px-4 py-3 text-gray-500">
                                         {new Date(order.createdAt).toLocaleString()}
+                                    </td>
+                                    <td className="px-4 py-3" onClick={(e) => { e.stopPropagation() }}>
+                                        <button
+                                            onClick={() => handleDeleteOrder(order.id)}
+                                            className="text-red-500 hover:text-red-700 p-1 hover:bg-red-50 rounded transition-colors"
+                                            title="Delete Order"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
@@ -243,8 +272,15 @@ export default function StoreOrders() {
                         </div>
 
                         {/* Actions */}
-                        <div className="flex justify-end">
-                            <button onClick={closeModal} className="px-4 py-2 bg-slate-200 rounded hover:bg-slate-300" >
+                        <div className="flex justify-between items-center border-t border-slate-100 pt-5 mt-5">
+                            <button
+                                onClick={() => handleDeleteOrder(selectedOrder.id)}
+                                className="flex items-center gap-1.5 px-4 py-2 text-red-600 hover:bg-red-50 font-medium rounded-lg transition-colors border border-red-100"
+                            >
+                                <Trash2 size={16} />
+                                Delete Order
+                            </button>
+                            <button onClick={closeModal} className="px-6 py-2 bg-slate-900 text-white font-medium rounded-lg hover:bg-slate-800 transition-all shadow-sm active:scale-95" >
                                 Close
                             </button>
                         </div>

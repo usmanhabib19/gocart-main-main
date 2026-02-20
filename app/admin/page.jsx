@@ -1,7 +1,7 @@
 'use client'
 import Loading from "@/components/Loading"
 import OrdersAreaChart from "@/components/OrdersAreaChart"
-import { CircleDollarSignIcon, ShoppingBasketIcon, StoreIcon, TagsIcon } from "lucide-react"
+import { CircleDollarSignIcon, ShoppingBasketIcon, StoreIcon, TagsIcon, RefreshCcw } from "lucide-react"
 import { useEffect, useState } from "react"
 import { getProducts } from "@/lib/actions/product"
 import { getAllStores } from "@/lib/actions/store"
@@ -19,6 +19,7 @@ export default function AdminDashboard() {
         stores: 0,
         allOrders: [],
     })
+    const [autoRefresh, setAutoRefresh] = useState(false)
 
     const dashboardCardsData = [
         { title: 'Total Products', value: dashboardData.products, icon: ShoppingBasketIcon },
@@ -58,11 +59,31 @@ export default function AdminDashboard() {
         fetchDashboardData()
     }, [])
 
+    useEffect(() => {
+        let interval;
+        if (autoRefresh) {
+            fetchDashboardData() // Refresh immediately when turned on
+            interval = setInterval(() => {
+                fetchDashboardData()
+            }, 15000) // Refresh every 15 seconds
+        }
+        return () => clearInterval(interval)
+    }, [autoRefresh])
+
     if (loading) return <Loading />
 
     return (
         <div className="text-slate-500">
-            <h1 className="text-2xl">Admin <span className="text-slate-800 font-medium">Dashboard</span></h1>
+            <div className="flex justify-between items-center mb-5">
+                <h1 className="text-2xl font-medium text-slate-800 tracking-tight">Admin <span className="text-slate-500 font-normal">Dashboard</span></h1>
+                <button
+                    onClick={() => setAutoRefresh(!autoRefresh)}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${autoRefresh ? 'bg-green-100 text-green-700 ring-2 ring-green-500 shadow-sm shadow-green-100' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'}`}
+                >
+                    <RefreshCcw size={16} className={`${autoRefresh ? 'animate-spin-slow' : ''}`} />
+                    {autoRefresh ? 'Auto Refresh: ON (15s)' : 'Auto Refresh: OFF'}
+                </button>
+            </div>
 
             {/* Cards */}
             <div className="flex flex-wrap gap-5 my-10 mt-4">
