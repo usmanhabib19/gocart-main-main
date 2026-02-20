@@ -78,10 +78,11 @@ export default function AdminDashboard() {
                 <h1 className="text-2xl font-medium text-slate-800 tracking-tight">Admin <span className="text-slate-500 font-normal">Dashboard</span></h1>
                 <button
                     onClick={() => setAutoRefresh(!autoRefresh)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${autoRefresh ? 'bg-green-100 text-green-700 ring-2 ring-green-500 shadow-sm shadow-green-100' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'}`}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 ${autoRefresh ? 'bg-green-100 text-green-700 ring-2 ring-green-500 shadow-sm shadow-green-100' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'}`}
                 >
-                    <RefreshCcw size={16} className={`${autoRefresh ? 'animate-spin-slow' : ''}`} />
-                    {autoRefresh ? 'Auto Refresh: ON (15s)' : 'Auto Refresh: OFF'}
+                    <RefreshCcw size={14} className={`sm:w-4 sm:h-4 ${autoRefresh ? 'animate-spin-slow' : ''}`} />
+                    <span className="hidden sm:inline">Auto Refresh: </span>
+                    {autoRefresh ? 'ON' : 'OFF'}
                 </button>
             </div>
 

@@ -90,24 +90,35 @@ const Hero = () => {
                     >
                         {carouselData.map((slide, index) => (
                             <SwiperSlide key={index}>
-                                <div className={`relative flex flex-col ${slide.bgColor} min-h-[400px] xl:min-h-[480px] group h-full w-full`}>
-                                    <div className='p-5 sm:p-16'>
-                                        <div className={`inline-flex items-center gap-3 ${slide.badgeColor} ${slide.badgeTextColor} pr-4 p-1 rounded-full text-xs sm:text-sm`}>
-                                            <span className={`${slide.badgeTextColor.replace('text', 'bg')} px-3 py-1 max-sm:ml-1 rounded-full text-white text-xs`}>NEWS</span> {slide.subtitle} <ChevronRightIcon className='group-hover:ml-2 transition-all' size={16} />
+                                <div className={`relative flex flex-col items-center sm:items-start ${slide.bgColor} min-h-[420px] sm:min-h-[400px] xl:min-h-[480px] group h-full w-full overflow-hidden`}>
+                                    <div className='p-6 sm:p-16 text-center sm:text-left flex flex-col items-center sm:items-start z-10'>
+                                        <div className={`inline-flex items-center gap-3 ${slide.badgeColor} ${slide.badgeTextColor} pr-3 p-1 rounded-full text-[10px] sm:text-sm mb-3`}>
+                                            <span className={`${slide.badgeTextColor.replace('text', 'bg')} px-2 py-0.5 rounded-full text-white text-[9px]`}>NEWS</span>
+                                            <span className="truncate max-w-[120px] sm:max-w-none">{slide.subtitle}</span>
+                                            <ChevronRightIcon className='group-hover:ml-2 transition-all hidden sm:block' size={14} />
                                         </div>
-                                        <h2 className='text-3xl sm:text-5xl leading-[1.2] my-3 font-medium bg-gradient-to-r from-slate-600 to-[#A0FF74] bg-clip-text text-transparent max-w-xs sm:max-w-md'>
-                                            {slide.title}
+                                        <h2 className='text-2xl sm:text-5xl leading-[1.1] mb-3 font-bold text-slate-800 max-w-[280px] sm:max-w-md'>
+                                            {slide.title.split('. ').map((part, i) => (
+                                                <span key={i} className="block">{part}{i === 0 ? '.' : ''}</span>
+                                            ))}
                                         </h2>
-                                        <div className={`${slide.textColor} text-sm font-medium mt-4 sm:mt-8`}>
-                                            <p>Starts from</p>
-                                            <p className='text-3xl'>{currency}{slide.price}</p>
+                                        <div className={`${slide.textColor} flex flex-col items-center sm:items-start text-xs font-medium mb-4`}>
+                                            <p className="text-slate-500 uppercase tracking-widest text-[9px] mb-0.5">Starts from</p>
+                                            <p className='text-3xl font-bold'>{currency}{slide.price}</p>
                                         </div>
                                         <Link href={slide.link}>
-                                            <button className={`${slide.btnColor} text-white text-sm py-2.5 px-7 sm:py-5 sm:px-12 mt-4 sm:mt-10 rounded-md hover:scale-103 active:scale-95 transition`}>LEARN MORE</button>
+                                            <button className={`${slide.btnColor} text-white text-[10px] sm:text-sm py-2.5 px-6 sm:py-5 sm:px-12 rounded-full hover:shadow-lg hover:brightness-110 active:scale-95 transition-all duration-300 font-semibold tracking-wide uppercase`}>
+                                                LEARN MORE
+                                            </button>
                                         </Link>
                                     </div>
-                                    <div className='sm:absolute bottom-0 right-0 md:right-10 w-full sm:max-w-sm flex justify-center items-end p-5'>
-                                        <Image className='w-full max-w-[200px] sm:max-w-sm object-contain' src={slide.image} alt={slide.title} />
+                                    <div className='mt-auto sm:absolute bottom-0 right-0 xl:right-10 w-full sm:max-w-72 md:max-w-sm flex justify-center items-end p-4 sm:p-0 pointer-events-none h-[220px] sm:h-auto'>
+                                        <Image
+                                            className='w-full h-full max-w-[180px] sm:max-w-none object-contain transform sm:scale-110 xl:scale-125 origin-bottom transition-transform duration-700 group-hover:scale-105 sm:group-hover:scale-115 xl:group-hover:scale-130'
+                                            src={slide.image}
+                                            alt={slide.title}
+                                            priority
+                                        />
                                     </div>
                                 </div>
                             </SwiperSlide>

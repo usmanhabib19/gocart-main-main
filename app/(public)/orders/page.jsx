@@ -62,10 +62,11 @@ export default function Orders() {
                             <PageTitle heading="My Orders" text={`Showing total ${orders.length} orders`} linkText={'Go to home'} />
                             <button
                                 onClick={() => setAutoRefresh(!autoRefresh)}
-                                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${autoRefresh ? 'bg-green-100 text-green-700 ring-2 ring-green-500' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                                className={`flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all ${autoRefresh ? 'bg-green-100 text-green-700 ring-2 ring-green-500' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
                             >
-                                <RefreshCcw size={16} className={autoRefresh ? 'animate-spin-slow' : ''} />
-                                {autoRefresh ? 'Auto Refresh: ON' : 'Auto Refresh: OFF'}
+                                <RefreshCcw size={14} className={`sm:w-4 sm:h-4 ${autoRefresh ? 'animate-spin-slow' : ''}`} />
+                                <span className="hidden sm:inline">Auto Refresh: </span>
+                                {autoRefresh ? 'ON' : 'OFF'}
                             </button>
                         </div>
 
