@@ -4,7 +4,7 @@ import Loading from "@/components/Loading"
 import toast from "react-hot-toast"
 import { getOrdersByStoreId, updateOrderStatus as updateOrderStatusAction, setTrackingId as setTrackingIdAction } from "@/lib/actions/order"
 import { getStoreByUserId } from "@/lib/actions/store"
-import { SendIcon } from "lucide-react"
+import { SendIcon, RefreshCcw } from "lucide-react"
 
 export default function StoreOrders() {
     const [orders, setOrders] = useState([])
@@ -13,6 +13,7 @@ export default function StoreOrders() {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [trackingInput, setTrackingInput] = useState('')
     const [savingTracking, setSavingTracking] = useState(false)
+    const [autoRefresh, setAutoRefresh] = useState(false)
 
     const fetchOrders = async () => {
         try {
@@ -27,6 +28,14 @@ export default function StoreOrders() {
             console.error("Failed to fetch orders:", error)
         } finally {
             setLoading(false)
+        }
+    }
+
+    const refreshOrders = async () => {
+        const store = await getStoreByUserId()
+        if (store) {
+            const data = await getOrdersByStoreId(store.id)
+            setOrders(data)
         }
     }
 
@@ -76,11 +85,31 @@ export default function StoreOrders() {
         fetchOrders()
     }, [])
 
+    useEffect(() => {
+        let interval;
+        if (autoRefresh) {
+            refreshOrders() // Refresh immediately when turned on
+            interval = setInterval(() => {
+                refreshOrders()
+            }, 15000) // Refresh every 15 seconds
+        }
+        return () => clearInterval(interval)
+    }, [autoRefresh])
+
     if (loading) return <Loading />
 
     return (
         <>
-            <h1 className="text-2xl text-slate-500 mb-5">Store <span className="text-slate-800 font-medium">Orders</span></h1>
+            <div className="flex justify-between items-center mb-5">
+                <h1 className="text-2xl text-slate-500">Store <span className="text-slate-800 font-medium">Orders</span></h1>
+                <button
+                    onClick={() => setAutoRefresh(!autoRefresh)}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${autoRefresh ? 'bg-green-100 text-green-700 ring-2 ring-green-500' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                >
+                    <RefreshCcw size={16} className={autoRefresh ? 'animate-spin-slow' : ''} />
+                    {autoRefresh ? 'Auto Refresh: ON (30s)' : 'Auto Refresh: OFF'}
+                </button>
+            </div>
             {orders.length === 0 ? (
                 <p>No orders found</p>
             ) : (

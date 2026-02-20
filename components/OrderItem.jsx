@@ -80,7 +80,7 @@ const OrderItem = ({ order }) => {
 
             {/* Mobile layout */}
             <tr className="md:hidden">
-                <td colSpan={5}>
+                <td colSpan={4}>
                     <p>{order.address.name}, {order.address.street}</p>
                     <p>{order.address.city}, {order.address.state}, {order.address.zip}, {order.address.country}</p>
                     <p>{order.address.phone}</p>

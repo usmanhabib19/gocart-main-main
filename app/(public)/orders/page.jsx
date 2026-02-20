@@ -6,30 +6,44 @@ import { getOrdersByUserId } from "@/lib/actions/order";
 import { getRatingsByUserId } from "@/lib/actions/rating";
 import { setRatings } from "@/lib/features/rating/ratingSlice";
 import { useDispatch } from "react-redux";
+import { RefreshCcw } from "lucide-react";
 
 export default function Orders() {
 
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [autoRefresh, setAutoRefresh] = useState(false);
     const dispatch = useDispatch();
 
+    const fetchOrders = async () => {
+        try {
+            const [ordersData, ratingsData] = await Promise.all([
+                getOrdersByUserId(),
+                getRatingsByUserId()
+            ]);
+            setOrders(ordersData);
+            dispatch(setRatings(ratingsData));
+        } catch (error) {
+            console.error("Failed to fetch orders:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchOrders = async () => {
-            try {
-                const [ordersData, ratingsData] = await Promise.all([
-                    getOrdersByUserId(),
-                    getRatingsByUserId()
-                ]);
-                setOrders(ordersData);
-                dispatch(setRatings(ratingsData));
-            } catch (error) {
-                console.error("Failed to fetch orders:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchOrders();
     }, [dispatch]);
+
+    useEffect(() => {
+        let interval;
+        if (autoRefresh) {
+            fetchOrders() // Refresh immediately
+            interval = setInterval(() => {
+                fetchOrders()
+            }, 15000) // 15 seconds
+        }
+        return () => clearInterval(interval)
+    }, [autoRefresh])
 
     if (loading) {
         return (
@@ -44,7 +58,16 @@ export default function Orders() {
             {orders.length > 0 ? (
                 (
                     <div className="my-20 max-w-7xl mx-auto">
-                        <PageTitle heading="My Orders" text={`Showing total ${orders.length} orders`} linkText={'Go to home'} />
+                        <div className="flex justify-between items-end mb-8">
+                            <PageTitle heading="My Orders" text={`Showing total ${orders.length} orders`} linkText={'Go to home'} />
+                            <button
+                                onClick={() => setAutoRefresh(!autoRefresh)}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${autoRefresh ? 'bg-green-100 text-green-700 ring-2 ring-green-500' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                            >
+                                <RefreshCcw size={16} className={autoRefresh ? 'animate-spin-slow' : ''} />
+                                {autoRefresh ? 'Auto Refresh: ON' : 'Auto Refresh: OFF'}
+                            </button>
+                        </div>
 
                         <table className="w-full max-w-5xl text-slate-500 table-auto border-separate border-spacing-y-12 border-spacing-x-4">
                             <thead>

@@ -1,6 +1,17 @@
 @import "tailwindcss";
 
-html, body {
+@theme {
+    --animate-spin-slow: spin 3s linear infinite;
+}
+
+@layer base {
+    button {
+        cursor: pointer;
+    }
+}
+
+html,
+body {
     overflow-x: hidden;
 }
 
@@ -9,6 +20,7 @@ html, body {
         0% {
             transform: translateX(0%);
         }
+
         100% {
             transform: translateX(-50%);
         }
@@ -20,6 +32,7 @@ html, body {
         cursor: pointer;
     }
 }
+
 
 .no-scrollbar::-webkit-scrollbar {
     display: none;
