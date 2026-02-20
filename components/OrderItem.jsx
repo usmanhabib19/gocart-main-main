@@ -1,15 +1,17 @@
 'use client'
 import Image from "next/image";
-import { DotIcon } from "lucide-react";
+import { DotIcon, MapPinIcon, PackageSearchIcon } from "lucide-react";
 import { useSelector } from "react-redux";
 import Rating from "./Rating";
 import { useState } from "react";
 import RatingModal from "./RatingModal";
+import OrderTracking from "./OrderTracking";
 
 const OrderItem = ({ order }) => {
 
     const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '$';
     const [ratingModal, setRatingModal] = useState(null);
+    const [showTracking, setShowTracking] = useState(false);
 
     const { ratings } = useSelector(state => state.rating);
 
@@ -65,22 +67,48 @@ const OrderItem = ({ order }) => {
                         <DotIcon size={10} className="scale-250" />
                         {order.status.split('_').join(' ').toLowerCase()}
                     </div>
+                    {/* Track Order Button */}
+                    <button
+                        onClick={() => setShowTracking(prev => !prev)}
+                        className="flex items-center gap-1.5 text-xs text-green-600 hover:text-green-700 font-medium mt-1 transition-colors w-full justify-center"
+                    >
+                        <PackageSearchIcon size={13} />
+                        {showTracking ? 'Hide Tracking' : 'Track Order'}
+                    </button>
                 </td>
             </tr>
-            {/* Mobile */}
+
+            {/* Mobile layout */}
             <tr className="md:hidden">
                 <td colSpan={5}>
                     <p>{order.address.name}, {order.address.street}</p>
                     <p>{order.address.city}, {order.address.state}, {order.address.zip}, {order.address.country}</p>
                     <p>{order.address.phone}</p>
                     <br />
-                    <div className="flex items-center">
-                        <span className='text-center mx-auto px-6 py-1.5 rounded bg-green-100 text-green-700' >
+                    <div className="flex items-center gap-3 justify-center">
+                        <span className='text-center px-6 py-1.5 rounded bg-green-100 text-green-700'>
                             {order.status.replace(/_/g, ' ').toLowerCase()}
                         </span>
+                        <button
+                            onClick={() => setShowTracking(prev => !prev)}
+                            className="flex items-center gap-1 text-xs text-green-600 font-medium"
+                        >
+                            <PackageSearchIcon size={13} />
+                            {showTracking ? 'Hide' : 'Track'}
+                        </button>
                     </div>
                 </td>
             </tr>
+
+            {/* Tracking Timeline */}
+            {showTracking && (
+                <tr>
+                    <td colSpan={4} className="pb-2">
+                        <OrderTracking status={order.status} createdAt={order.createdAt} trackingId={order.trackingId} />
+                    </td>
+                </tr>
+            )}
+
             <tr>
                 <td colSpan={4}>
                     <div className="border-b border-slate-300 w-6/7 mx-auto" />

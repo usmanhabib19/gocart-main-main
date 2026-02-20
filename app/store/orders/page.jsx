@@ -2,14 +2,17 @@
 import { useEffect, useState } from "react"
 import Loading from "@/components/Loading"
 import toast from "react-hot-toast"
-import { getOrdersByStoreId, updateOrderStatus as updateOrderStatusAction } from "@/lib/actions/order"
+import { getOrdersByStoreId, updateOrderStatus as updateOrderStatusAction, setTrackingId as setTrackingIdAction } from "@/lib/actions/order"
 import { getStoreByUserId } from "@/lib/actions/store"
+import { SendIcon } from "lucide-react"
 
 export default function StoreOrders() {
     const [orders, setOrders] = useState([])
     const [loading, setLoading] = useState(true)
     const [selectedOrder, setSelectedOrder] = useState(null)
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [trackingInput, setTrackingInput] = useState('')
+    const [savingTracking, setSavingTracking] = useState(false)
 
     const fetchOrders = async () => {
         try {
@@ -43,7 +46,25 @@ export default function StoreOrders() {
 
     const openModal = (order) => {
         setSelectedOrder(order)
+        setTrackingInput(order.trackingId || '')
         setIsModalOpen(true)
+    }
+
+    const handleSaveTrackingId = async () => {
+        if (!selectedOrder) return
+        setSavingTracking(true)
+        try {
+            await setTrackingIdAction(selectedOrder.id, trackingInput)
+            setOrders(prev => prev.map(o =>
+                o.id === selectedOrder.id ? { ...o, trackingId: trackingInput } : o
+            ))
+            setSelectedOrder(prev => ({ ...prev, trackingId: trackingInput }))
+            toast.success('Tracking ID saved!')
+        } catch (error) {
+            toast.error('Failed to save tracking ID')
+        } finally {
+            setSavingTracking(false)
+        }
     }
 
     const closeModal = () => {
@@ -165,6 +186,31 @@ export default function StoreOrders() {
                             )}
                             <p><span className="text-green-700">Status:</span> {selectedOrder.status}</p>
                             <p><span className="text-green-700">Order Date:</span> {new Date(selectedOrder.createdAt).toLocaleString()}</p>
+                        </div>
+
+                        {/* Tracking ID */}
+                        <div className="mb-4">
+                            <h3 className="font-semibold mb-2">Tracking ID</h3>
+                            <div className="flex gap-2 items-center">
+                                <input
+                                    type="text"
+                                    value={trackingInput}
+                                    onChange={e => setTrackingInput(e.target.value)}
+                                    placeholder="Enter courier tracking number..."
+                                    className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-green-500 focus:ring-1 focus:ring-green-100 transition-all"
+                                />
+                                <button
+                                    onClick={handleSaveTrackingId}
+                                    disabled={savingTracking}
+                                    className="flex items-center gap-1.5 px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg disabled:opacity-60 transition-colors"
+                                >
+                                    <SendIcon size={14} />
+                                    {savingTracking ? 'Saving...' : 'Save'}
+                                </button>
+                            </div>
+                            {selectedOrder.trackingId && (
+                                <p className="text-xs text-slate-400 mt-1.5">Current: <span className="font-mono text-slate-600">{selectedOrder.trackingId}</span></p>
+                            )}
                         </div>
 
                         {/* Actions */}
