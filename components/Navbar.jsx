@@ -1,5 +1,5 @@
 'use client'
-import { LayoutDashboard, Menu, PackageIcon, Search, ShoppingCart, Store, X } from "lucide-react";
+import { LayoutDashboard, MapPinIcon, Menu, PackageIcon, Search, ShoppingCart, Store, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -86,7 +86,7 @@ const Navbar = () => {
                             ) : (
                                 <UserButton>
                                     <UserButton.MenuItems>
-
+                                        <UserButton.Action labelIcon={<MapPinIcon size={16} />} label="My Profile" onClick={() => router.push('/profile')} />
                                         <UserButton.Action labelIcon={<PackageIcon size={16} />} label="My Orders" onClick={() => router.push('/orders')} />
                                         {isAdmin && (
                                             <UserButton.Action labelIcon={<LayoutDashboard size={16} />} label="Admin Panel" onClick={() => router.push('/admin')} />
@@ -106,6 +106,7 @@ const Navbar = () => {
                         {user ? (
                             <UserButton>
                                 <UserButton.MenuItems>
+                                    <UserButton.Action labelIcon={<MapPinIcon size={16} />} label="My Profile" onClick={() => router.push('/profile')} />
                                     <UserButton.Action labelIcon={<ShoppingCart size={16} />} label="Cart" onClick={() => router.push('/cart')} />
                                     <UserButton.Action labelIcon={<PackageIcon size={16} />} label="My Orders" onClick={() => router.push('/orders')} />
                                     {isAdmin && (

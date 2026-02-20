@@ -7,6 +7,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Counter from "./Counter";
 import { useDispatch, useSelector } from "react-redux";
+import { useUser, useClerk } from "@clerk/nextjs";
 
 const ProductDetails = ({ product }) => {
 
@@ -15,17 +16,23 @@ const ProductDetails = ({ product }) => {
 
     const cart = useSelector(state => state.cart.cartItems);
     const dispatch = useDispatch();
+    const { user } = useUser();
+    const { openSignIn } = useClerk();
 
     const router = useRouter()
 
     const [mainImage, setMainImage] = useState(product.images[0]);
 
     const addToCartHandler = () => {
+        if (!user) {
+            openSignIn()
+            return
+        }
         dispatch(addToCart({ productId }))
     }
 
     const averageRating = product.rating.reduce((acc, item) => acc + item.rating, 0) / product.rating.length;
-    
+
     return (
         <div className="flex max-lg:flex-col gap-12">
             <div className="flex max-sm:flex-col-reverse gap-3">
