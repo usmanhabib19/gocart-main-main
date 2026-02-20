@@ -6,6 +6,7 @@ import Loading from "@/components/Loading"
 import Image from "next/image"
 import { assets } from "@/assets/assets"
 import { useUser } from "@clerk/nextjs"
+import AddressManagement from "@/components/AddressManagement"
 
 const AdminProfile = () => {
 
@@ -117,6 +118,8 @@ const AdminProfile = () => {
                 </div>
 
             </div>
+
+            <AddressManagement />
         </div>
     )
 }

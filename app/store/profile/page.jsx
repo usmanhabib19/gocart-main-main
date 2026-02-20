@@ -5,6 +5,7 @@ import { getStoreByUserId, updateStore } from "@/lib/actions/store"
 import Loading from "@/components/Loading"
 import Image from "next/image"
 import { assets } from "@/assets/assets"
+import AddressManagement from "@/components/AddressManagement"
 
 const StoreProfile = () => {
 
@@ -171,6 +172,8 @@ const StoreProfile = () => {
                 </button>
 
             </form>
+
+            <AddressManagement />
         </div>
     )
 }

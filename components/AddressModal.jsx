@@ -2,14 +2,14 @@
 import { XIcon } from "lucide-react"
 import React, { useState } from "react"
 import { toast } from "react-hot-toast"
-import { createAddress } from "@/lib/actions/address"
-import { addAddress } from "@/lib/features/address/addressSlice"
+import { createAddress, updateAddress } from "@/lib/actions/address"
+import { addAddress, updateAddress as updateAddressSlice } from "@/lib/features/address/addressSlice"
 import { useDispatch } from "react-redux"
 
-const AddressModal = ({ setShowAddressModal }) => {
+const AddressModal = ({ setShowAddressModal, initialData = null }) => {
 
     const dispatch = useDispatch()
-    const [address, setAddress] = useState({
+    const [address, setAddress] = useState(initialData || {
         name: '',
         email: '',
         street: '',
@@ -31,20 +31,26 @@ const AddressModal = ({ setShowAddressModal }) => {
         e.preventDefault()
 
         try {
-            const newAddress = await createAddress(address)
-            dispatch(addAddress(newAddress))
-            toast.success("Address added successfully")
+            if (initialData) {
+                const updatedAddress = await updateAddress(initialData.id || initialData._id, address)
+                dispatch(updateAddressSlice(updatedAddress))
+                toast.success("Address updated successfully")
+            } else {
+                const newAddress = await createAddress(address)
+                dispatch(addAddress(newAddress))
+                toast.success("Address added successfully")
+            }
             setShowAddressModal(false)
         } catch (error) {
-            console.error("Failed to add address:", error)
-            toast.error(error.message || "Failed to add address")
+            console.error("Failed to save address:", error)
+            toast.error(error.message || "Failed to save address")
         }
     }
 
     return (
-        <form onSubmit={e => toast.promise(handleSubmit(e), { loading: 'Adding Address...' })} className="fixed inset-0 z-50 bg-white/60 backdrop-blur h-screen flex items-center justify-center">
+        <form onSubmit={e => toast.promise(handleSubmit(e), { loading: initialData ? 'Updating Address...' : 'Adding Address...' })} className="fixed inset-0 z-50 bg-white/60 backdrop-blur h-screen flex items-center justify-center">
             <div className="flex flex-col gap-5 text-slate-700 w-full max-w-sm mx-6">
-                <h2 className="text-3xl ">Add New <span className="font-semibold">Address</span></h2>
+                <h2 className="text-3xl ">{initialData ? 'Edit' : 'Add New'} <span className="font-semibold">Address</span></h2>
                 <input name="name" onChange={handleAddressChange} value={address.name} className="p-2 px-4 outline-none border border-slate-200 rounded w-full" type="text" placeholder="Enter your name" required />
                 <input name="email" onChange={handleAddressChange} value={address.email} className="p-2 px-4 outline-none border border-slate-200 rounded w-full" type="email" placeholder="Email address" required />
                 <input name="street" onChange={handleAddressChange} value={address.street} className="p-2 px-4 outline-none border border-slate-200 rounded w-full" type="text" placeholder="Street" required />
