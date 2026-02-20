@@ -17,7 +17,8 @@ export default function StoreShop() {
 
     const fetchStoreData = async () => {
         try {
-            const store = await getStoreByUsername(username)
+            const decodedUsername = decodeURIComponent(username)
+            const store = await getStoreByUsername(decodedUsername)
             if (store) {
                 setStoreInfo(store)
                 const storeProducts = await getProductsByStoreId(store.id)
